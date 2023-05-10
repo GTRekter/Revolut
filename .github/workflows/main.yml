@@ -68,4 +68,4 @@ jobs:
       - name: Swap blue/green deployment
         if: ${{ success() && steps.k6.outputs.overall_result === 'successful' }}
         run: |
-          aws ecs update-service --cluster ${{ secrets.CLUSTER_NAME }} --service ${{ secrets.SERVICE_NAME }} --force-new-deployment
+          eb swap development --destination-name production --verbose
