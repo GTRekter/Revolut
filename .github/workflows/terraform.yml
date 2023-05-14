@@ -73,26 +73,35 @@ jobs:
           echo "terraform_plan=$(cat tf.json | jq -c)" >> "$GITHUB_ENV"
         working-directory: terraform
 
+      # - name: Comment on pull request
+      #   if: github.event_name == 'pull_request'
+      #   uses: actions/github-script@v5
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     script: |
+      #       const prNumber = "${{ github.event.pull_request.number }}";
+      #       const repo = context.repo;
+      #       const comment = `
+      #         Terraform plan has been executed for this pull request.
+      #         - [View Terraform Plan](https://github.com/${repo.owner}/${repo.repo}/pull/${prNumber}/files)
+      #         \`\`\`
+      #         ${{ env.terraform_plan }}
+      #         \`\`\`
+      #       `;
+      #       github.pulls.createReviewComment({
+      #         ...repo,
+      #         pull_number: prNumber,
+      #         body: comment,
+      #       });
       - name: Comment on pull request
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v5
+        uses: thollander/actions-comment-pull-request@v2
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const prNumber = "${{ github.event.pull_request.number }}";
-            const repo = context.repo;
-            const comment = `
-              Terraform plan has been executed for this pull request.
-              - [View Terraform Plan](https://github.com/${repo.owner}/${repo.repo}/pull/${prNumber}/files)
-              \`\`\`
-              ${{ env.terraform_plan }}
-              \`\`\`
-            `;
-            github.pulls.createReviewComment({
-              ...repo,
-              pull_number: prNumber,
-              body: comment,
-            });
+          message: |
+            Terraform plan has been executed for this pull request.
+            - [View Terraform Plan](https://github.com/${repo.owner}/${repo.repo}/pull/${github.event.pull_request.number }/files)
+            \`\`\`
+            ${{ env.terraform_plan }}
+            \`\`\`
 
       - name: Terraform apply
         if: github.event_name == 'push'
