@@ -11,3 +11,4 @@ app_engine_applications = [
         database_type = "CLOUD_DATASTORE_COMPATIBILITY"
     }
 ]
+

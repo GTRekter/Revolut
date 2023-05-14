@@ -7,7 +7,6 @@ const model = require('../src/user/model');
 chai.use(chaiHttp);
 
 describe('PUT /hello/:username', () => {
-
     it('should save a user and return status 204', (done) => {
       const user = {
         username: 'testuser',
