@@ -100,6 +100,11 @@ jobs:
           gcloud auth activate-service-account --key-file=${{ vars.GCP_KEY_FILE_NAME }}.json
         working-directory: web
         
+      - name: Delete testing .env file
+        run: |
+          rm .env
+        working-directory: web
+
       - name: Create production .env file
         run: |
           echo "GCP_PROJECT_ID=${GCP_PROJECT_ID}" >> .env
