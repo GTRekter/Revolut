@@ -17,7 +17,7 @@ function getBirthdayMessage(username, dateOfBirth) {
     const momentDateOfBirth = moment(dateOfBirth, 'YYYY-MM-DD');
     const age = today.diff(momentDateOfBirth, 'years');
     const nextBirthday = momentDateOfBirth.clone().year(today.year());
-    if (nextBirthday.isSameOrBefore(today)) {
+    if (nextBirthday.isBefore(today)) {
       nextBirthday.add(1, 'year');
     }
     const daysUntilBirthday = nextBirthday.diff(today, 'days');
