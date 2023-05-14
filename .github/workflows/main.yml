@@ -39,7 +39,10 @@ jobs:
 
       - name: Terraform show to convert Terraform plan to text
         run: |
-          terraform show -no-color tf.tfplan > ./tf.txt
+          terraform show -no-color tf.tfplan > tf.txt
+        env:
+          TF_LOG: trace
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
         working-directory: terraform
         
       - name: Set environment variable with the Terraform plan
