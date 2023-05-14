@@ -37,8 +37,8 @@ router.get('/hello/:username', async (req, res) => {
       return res.status(500).send('Internal Server Error');
     }
 });
-app.get('/', (req, res) => {
-  res.status(200).send('Hello from App Engine!');
+router.get('/', (req, res) => {
+  res.status(200).send('Hello revolut!');
 });
 
 
