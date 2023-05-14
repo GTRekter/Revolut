@@ -34,7 +34,6 @@ jobs:
           echo "DATASTORE_EMULATOR_HOST_PATH=${DATASTORE_EMULATOR_HOST_PATH}" >> .env
           echo "DATASTORE_HOST=${DATASTORE_HOST}" >> .env
           echo "DATASTORE_PROJECT_ID=${DATASTORE_PROJECT_ID}" >> .env
-          echo "API_BASE_URL=$(API_BASE_URL)" >> .env
         env:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
           GCP_KEY_FILE_NAME: ${{ vars.GCP_KEY_FILE_NAME }}
@@ -44,7 +43,6 @@ jobs:
           DATASTORE_EMULATOR_HOST_PATH: ${{ vars.DATASTORE_EMULATOR_HOST_PATH }}
           DATASTORE_HOST: ${{ vars.DATASTORE_HOST }}
           DATASTORE_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-          API_BASE_URL: 'https://staging.${{ secrets.GCP_PROJECT_ID }}.uc.r.appspot.com'
         working-directory: web
         
       - name: Install GCP CLI
@@ -95,60 +93,42 @@ jobs:
       #    echo "$GOOGLE_APPLICATION_CREDENTIALS" > ${{ vars.GCP_KEY_FILE_NAME }}.json
       #    gcloud auth activate-service-account --key-file=${{ vars.GCP_KEY_FILE_NAME }}.json
   
+      - name: Get Latest Version Number
+        id: get_version
+        run: |
+          VERSION=$(gcloud app versions list --service=default --format="value(VERSION.ID)" --sort-by="~VERSION.ID" --limit=1)
+          NEXT_VERSION=$((VERSION + 1))
+          echo "CURRENT_VERSION=${VERSION}" >> $GITHUB_ENV
+          echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
+        working-directory: web
+
       #- name: Deploy staging to GCP App Engine
       #  run: |
       #    gcloud app deploy --version=staging --no-promote --no-stop-previous-version
       #  working-directory: web
-      
-      
-
-      - name: Install K6
+      - name: Deploy to GCP App Engine
         run: |
-          sudo gpg -k
-          sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
-          echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
-          sudo apt-get update
-          sudo apt-get install k6
-        
-      - name: Run K6 load tests
-        run: |
-          npm run loadtest
+          gcloud app deploy --version=${NEXT_VERSION} --no-promote --no-stop-previous-version
         working-directory: web
-
-      #- name: Swap App Engine versions
-      #  run: | 
-      #    gcloud app services set-traffic default --splits=v1=0.9,v2=0.1 --quiet
-
-      #- name: Upload a Build Artifact
-     #   uses: actions/upload-artifact@v3.1.2
-     #   with:
-     #     name: revolut
-     #     path: ./web
-     #     if-no-files-found: error
-     #     retention-days: 1
-          
-  #test:
-  #  needs: build
-  #  runs-on: ubuntu-latest
-  #  steps:
-  #    - name: Install Node.js
-  #      uses: actions/setup-node@v2.3.0
-  #      with:
-  #        node-version: '14.x'
-          
-  #    - name: Download a Build Artifact
-  #      uses: actions/download-artifact@v2.1.1
-  #      with:
-  #        name: revolut
-  #        path: ./
-
-   #   - name: Run Mocha tests
-    #    run: npm run test
-        
-      # - name: Run K6 load tests
-      #  run: k6 run loadtests
-        
-      #- name: Swap blue/green deployment
-      #  if: ${{ success() && steps.k6.outputs.overall_result === 'successful' }}
+      
+      #- name: Install K6
       #  run: |
-      #    eb swap development --destination-name production --verbose
+      #    sudo gpg -k
+      #    sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+      #    echo "deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+      #    sudo apt-get update
+      #    sudo apt-get install k6
+        
+      #- name: Run K6 load tests
+      #  run: |
+      #    npm run loadtest
+      #  working-directory: web
+
+      - name: Check API endpoint with bash script
+        run: |
+          curl -X HEAD -I 'https://${NEXT_VERSION}.${{ secrets.GCP_PROJECT_ID }}.uc.r.appspot.com/hello/testuser'
+    
+      - name: Swap App Engine versions
+        run: | 
+          gcloud app services set-traffic default --splits=${CURRENT_VERSION}=0,${NEXT_VERSION}=1 --quiet
+
