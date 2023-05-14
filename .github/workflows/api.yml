@@ -48,7 +48,7 @@ jobs:
       - name: Install GCP CLI
         run: |
           curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-430.0.0-linux-x86_64.tar.gz
-          tar -xf google-cloud-cli-430.0.0-linux-x86.tar.gz
+          tar -xf google-cloud-cli-430.0.0-linux-x86_64.tar.gz
           sudo ./google-cloud-sdk/install.sh
       
       - name: Install Java JRE
