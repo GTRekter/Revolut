@@ -4,10 +4,13 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'terraform/**'
   pull_request:
     branches:
       - main
-  workflow_dispatch:
+    paths:
+      - 'terraform/**'
 
 jobs:
   terraform:
