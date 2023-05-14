@@ -136,8 +136,13 @@ describe('GET /hello/:username', () => {
   });
   
   it('Should return a birthday message with correct information', async () => {
-    const dateOfBirth = moment(sampleUsers[0].dateOfBirth, 'YYYY-MM-DD');
-    const age = today.diff(dateOfBirth, 'years');   
+    const momentDateOfBirth = moment(sampleUsers[0].dateOfBirth, 'YYYY-MM-DD');
+    const age = today.diff(momentDateOfBirth, 'years');
+    const nextBirthday = momentDateOfBirth.clone().year(today.year());
+    if (nextBirthday.isSameOrBefore(today)) {
+      nextBirthday.add(1, 'year');
+    }
+    const daysUntilBirthday = nextBirthday.diff(today, 'days');
     chai
       .request(app)
       .get('/hello/' + sampleUsers[0].username)
@@ -145,7 +150,7 @@ describe('GET /hello/:username', () => {
         if (err) {
           return done(err);
         }
-        chai.expect(res.text).to.equal(`Hello, ${sampleUsers[0].username}! Your birthday is in ${dateOfBirth.diff(today, 'days')} days. You will be ${age + 1} years old.`);
+        chai.expect(res.text).to.equal(`Hello, ${sampleUsers[0].username}! Your birthday is in ${daysUntilBirthday} days. You will be ${age + 1} years old.`);
       });
   });
 

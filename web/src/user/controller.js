@@ -14,12 +14,16 @@ function isValidDateOfBirth(dateOfBirth) {
 
 function getBirthdayMessage(username, dateOfBirth) {
     const momentDateOfBirth = moment(dateOfBirth, 'YYYY-MM-DD');
-    const today = moment().startOf('day');
     const age = today.diff(momentDateOfBirth, 'years');
-    if (momentDateOfBirth.isSame(today, 'day')) {
-        return `Hello, ${username}! Happy birthday!`
+    const nextBirthday = momentDateOfBirth.clone().year(today.year());
+    if (nextBirthday.isSameOrBefore(today)) {
+      nextBirthday.add(1, 'year');
+    }
+    const daysUntilBirthday = nextBirthday.diff(today, 'days');
+    if (daysUntilBirthday === 0) {
+      return `Hello, ${username}! Happy birthday!`;
     } else {
-        return `Hello, ${username}! Your birthday is in ${today.diff(momentDateOfBirth, 'days')} days. You will be ${age + 1} years old.`
+      return `Hello, ${username}! Your birthday is in ${daysUntilBirthday} days. You will be ${age + 1} years old.`;
     }
 }
 
