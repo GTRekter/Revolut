@@ -21,7 +21,7 @@ router.put('/hello/:username', async (req, res) => {
         await model.saveUser(user);
         return res.sendStatus(204);
     } catch (error) {
-        return res.sendStatus(500).send(error.message);
+        return res.status(500).send(error.message);
     }    
 });
 router.get('/hello/:username', async (req, res) => {
