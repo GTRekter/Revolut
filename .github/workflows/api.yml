@@ -169,7 +169,6 @@ on:
 
 jobs:
   test:
-    needs: setup
     environment: Development
     runs-on: ubuntu-latest
     steps:
