@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket      = "bt-revolut-usc"
+    bucket      = "bt-revolut-dev-usc"
     prefix      = "tfstates"
   }
 }

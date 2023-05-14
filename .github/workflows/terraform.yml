@@ -26,13 +26,6 @@ jobs:
         with:
           terraform_version: 1.0.0
 
-      # - name: Check and install Docker
-      #   run: |
-      #     if ! [[ $(which docker) && $(docker --version) ]]; then
-      #       sudo snap install docker;
-      #       sudo snap restart docker;
-      #     fi
-
       - name: Terraform init
         run: |
           terraform init
@@ -68,8 +61,6 @@ jobs:
         run: |
           sudo apt install python3-pip
           sudo pip3 install checkov
-          # sudo docker pull bridgecrew/checkov
-          # sudo docker run --rm --volume ~/terraform:/terraform --workdir /terraform bridgecrew/checkov -f tf.json --output junitxml --skip-download --soft-fail > ~/report.xml
 
       - name: Run Checkov
         run: |
