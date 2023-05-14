@@ -6,7 +6,7 @@ if (process.env.GCP_USE_EMULATOR === 'true') {
   console.log(`Initializing Datastore`)
   datastore = new Datastore({
     projectId: process.env.GCP_PROJECT_ID,
-    apiEndpoint: process.env.DATASTORE_HOST,
+    apiEndpoint: process.env.DATASTORE_HOST
   });
   console.log(`Datastore initialized`)
 } else {
