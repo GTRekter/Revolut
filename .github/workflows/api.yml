@@ -191,15 +191,15 @@ jobs:
           sudo ./google-cloud-sdk/install.sh
           sudo sed -i -e 's/true/false/' /usr/lib/google-cloud-sdk/lib/googlecloudsdk/core/config.json
 
-      - name: Install Java JRE
-        run: |
-          sudo apt install default-jre
-          sudo apt install openjdk-8-jre  
+      # - name: Install Java JRE
+      #  run: |
+      #    sudo apt install default-jre
+      #    sudo apt install openjdk-8-jre  
 
-      - name: Install datastore emulator component
-        run: |      
-          sudo gcloud components install cloud-datastore-emulator
-        working-directory: web
+      # - name: Install datastore emulator component
+      #  run: |      
+      #    sudo gcloud components install cloud-datastore-emulator
+      #  working-directory: web
 
       - name: Install K6
         run: |
@@ -209,11 +209,25 @@ jobs:
           sudo apt-get update
           sudo apt-get install k6
 
+      - name: Upload a Build Artifact
+        uses: actions/upload-artifact@v3.1.2
+        with:
+          name: revolut-api
+          path: ./
+          if-no-files-found: error
+          retention-days: 1
+    
   test:
     needs: setup
     environment: Development
     runs-on: ubuntu-latest
     steps:
+
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v2.1.1
+        with:
+          name: revolut-api
+          path: ./
 
       - name: Configure GCP CLI
         run: gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
@@ -231,36 +245,39 @@ jobs:
           echo "DATASTORE_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" >> .env
         working-directory: web
         
-      - name: Start local datastore emulator
-        run: |      
-          gcloud beta emulators datastore start --no-store-on-disk --quiet &
-        working-directory: web
-        env:
-          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
-          GCP_KEY_FILE_NAME: ${{ vars.GCP_KEY_FILE_NAME }}
-          DATASTORE_DATASET: ${{ secrets.GCP_PROJECT_ID }}
-          DATASTORE_EMULATOR_HOST: ${{ vars.DATASTORE_EMULATOR_HOST }}
-          DATASTORE_EMULATOR_HOST_PATH: ${{ vars.DATASTORE_EMULATOR_HOST_PATH }}
-          DATASTORE_HOST: ${{ vars.DATASTORE_HOST }}
-          DATASTORE_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      #- name: Start local datastore emulator
+      #  run: |      
+      #    gcloud beta emulators datastore start --no-store-on-disk --quiet &
+      #  working-directory: web
+      #  env:
+      #    GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+      #    GCP_KEY_FILE_NAME: ${{ vars.GCP_KEY_FILE_NAME }}
+      #    DATASTORE_DATASET: ${{ secrets.GCP_PROJECT_ID }}
+      #    DATASTORE_EMULATOR_HOST: ${{ vars.DATASTORE_EMULATOR_HOST }}
+      #    DATASTORE_EMULATOR_HOST_PATH: ${{ vars.DATASTORE_EMULATOR_HOST_PATH }}
+      #    DATASTORE_HOST: ${{ vars.DATASTORE_HOST }}
+      #    DATASTORE_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Run Mocha tests
         run: npm run test
         working-directory: web
 
-#       #- name: Run K6 load tests
-#       #  run: |
-#       #    k6 run --env API_BASE_URL=${NEXT_VERSION}-dot-${GCP_PROJECT_ID}.uc.r.appspot.com test/*.loadtest*.js
-#       #  working-directory: web
-
-      - name: Delete testing .env file
-        run: rm .env
-        working-directory: web
+      #- name: Run K6 load tests
+      #  run: |
+      #    k6 run --env API_BASE_URL=${NEXT_VERSION}-dot-${GCP_PROJECT_ID}.uc.r.appspot.com test/*.loadtest*.js
+      #  working-directory: web
 
   deploy:
     needs: test
+    environment: Production
     runs-on: ubuntu-latest
     steps:
+
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v2.1.1
+        with:
+          name: revolut-api
+          path: ./
 
       - name: Generate GCP credentials
         run: |
@@ -280,17 +297,17 @@ jobs:
           echo "GCP_USE_EMULATOR=false" >> .env
         working-directory: web
 
-#       - name: Get Latest Version Number
-#         id: get_version
-#         run: |
-#           VERSION_COUNT=$(gcloud app versions list --service=default --format="value(VERSION.ID)" --sort-by="~VERSION.ID" | wc -l)
-#           NEXT_VERSION=$((VERSION_COUNT + 1))
-#           echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
+      - name: Get Latest Version Number
+        id: get_version
+        run: |
+          VERSION_COUNT=$(gcloud app versions list --service=default --format="value(VERSION.ID)" --sort-by="~VERSION.ID" | wc -l)
+          NEXT_VERSION=$((VERSION_COUNT + 1))
+          echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
 
-#       - name: Deploy to GCP App Engine
-#         run: |
-#           gcloud app deploy --version=${NEXT_VERSION} --no-promote --no-stop-previous-version
-#         working-directory: web
+      - name: Deploy to GCP App Engine
+        run: |
+          gcloud app deploy --version=${NEXT_VERSION} --no-promote --no-stop-previous-version
+        working-directory: web
         
         #       - name: Swap App Engine versions
 #         run: | 
