@@ -19,5 +19,3 @@ if (process.env.GCP_USE_EMULATOR === 'true') {
 }
 
 module.exports = datastore;
-
-
