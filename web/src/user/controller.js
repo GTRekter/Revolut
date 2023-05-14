@@ -13,6 +13,7 @@ function isValidDateOfBirth(dateOfBirth) {
 }
 
 function getBirthdayMessage(username, dateOfBirth) {
+    const today = moment().startOf('day');
     const momentDateOfBirth = moment(dateOfBirth, 'YYYY-MM-DD');
     const age = today.diff(momentDateOfBirth, 'years');
     const nextBirthday = momentDateOfBirth.clone().year(today.year());
