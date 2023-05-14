@@ -23,19 +23,23 @@ jobs:
           terraform_version: 1.0.0
 
       - name: Terraform init
-        run: terraform init
+        run: |
+          terraform init
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
         working-directory: terraform
         
       - name: Create Terraform workspace
-        run: terraform workspace new pr-${{ github.event.pull_request.number }}
+        if: github.event_name == 'pull_request'
+        run: |
+          terraform workspace new pr-${{ github.event.pull_request.number }}
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
         working-directory: terraform
       
       - name: Terraform plan
-        run: terraform plan -out=tf.tfplan
+        run: |
+          terraform plan -out=tf.tfplan
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
         working-directory: terraform
@@ -78,7 +82,24 @@ jobs:
 
       - name: Terraform apply
         if: github.event_name == 'push'
-        run: terraform apply -input=tf.tfplan
+        run: |
+          terraform apply -input=tf.tfplan
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        working-directory: terraform
+
+      - name: Switch to default Terraform workspace
+        if: github.event_name == 'pull_request'
+        run: |
+          terraform workspace select default
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        working-directory: terraform
+
+      - name: Delete Terraform workspace
+        if: github.event_name == 'pull_request'
+        run: |
+          terraform workspace delete pr-${{ github.event.pull_request.number }}
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
         working-directory: terraform
