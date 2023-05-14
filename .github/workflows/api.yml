@@ -34,6 +34,7 @@ jobs:
           echo "DATASTORE_EMULATOR_HOST_PATH=${DATASTORE_EMULATOR_HOST_PATH}" >> .env
           echo "DATASTORE_HOST=${DATASTORE_HOST}" >> .env
           echo "DATASTORE_PROJECT_ID=${DATASTORE_PROJECT_ID}" >> .env
+          echo "API_BASE_URL=$(API_BASE_URL)" >> .env
         env:
           GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
           GCP_KEY_FILE_NAME: ${{ vars.GCP_KEY_FILE_NAME }}
@@ -43,8 +44,9 @@ jobs:
           DATASTORE_EMULATOR_HOST_PATH: ${{ vars.DATASTORE_EMULATOR_HOST_PATH }}
           DATASTORE_HOST: ${{ vars.DATASTORE_HOST }}
           DATASTORE_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          API_BASE_URL: 'https://staging.${{ secrets.GCP_PROJECT_ID }}.uc.r.appspot.com'
         working-directory: web
-   
+        
       - name: Install GCP CLI
         run: |
           curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-430.0.0-linux-x86_64.tar.gz
@@ -85,17 +87,22 @@ jobs:
       #    npm run test
       #  working-directory: web
   
-      - name: Authenticate with Google Cloud
-        env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
-          GCP_KEY_FILE_NAME: ${{ vars.GCP_KEY_FILE_NAME }}
-        run: |
-          echo "$GOOGLE_APPLICATION_CREDENTIALS" > ${{ vars.GCP_KEY_FILE_NAME }}.json
-          gcloud auth activate-service-account --key-file=${{ vars.GCP_KEY_FILE_NAME }}.json
+      #- name: Authenticate with Google Cloud
+      #  env:
+      #    GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+      #    GCP_KEY_FILE_NAME: ${{ vars.GCP_KEY_FILE_NAME }}
+      #  run: |
+      #    echo "$GOOGLE_APPLICATION_CREDENTIALS" > ${{ vars.GCP_KEY_FILE_NAME }}.json
+      #    gcloud auth activate-service-account --key-file=${{ vars.GCP_KEY_FILE_NAME }}.json
   
-      - name: Deploy to GCP App Engine
+      #- name: Deploy staging to GCP App Engine
+      #  run: |
+      #    gcloud app deploy --version=staging --no-promote --no-stop-previous-version
+      #  working-directory: web
+        
+      - name: Run K6 load tests
         run: |
-          gcloud app deploy --version=staging --no-promote --no-stop-previous-version
+          npm run loadtests
         working-directory: web
 
       #- name: Swap App Engine versions
