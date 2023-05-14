@@ -120,18 +120,18 @@ describe('GET /hello/:username', () => {
   const today = moment().startOf('day');
   const sampleUsers = [
     {
-      username: 'testuser1',
+      username: 'jhon',
       dateOfBirth: '1989-09-23'
     },
     {
-      username: 'testuser2',
+      username: 'evelynn',
       dateOfBirth: today.format('YYYY-MM-DD')
     }
   ];
 
-  before(() => {
+  before(async () => {
     for (let user of sampleUsers) {
-      model.saveUser(user);
+      await model.saveUser(user);
     }
   });
   
