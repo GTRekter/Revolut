@@ -112,7 +112,7 @@ jobs:
         
       - name: Run K6 load tests
         run: |
-          npm run loadtests
+          npm run loadtest
         working-directory: web
 
       #- name: Swap App Engine versions
