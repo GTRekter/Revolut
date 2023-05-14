@@ -96,16 +96,11 @@ jobs:
       - name: Get Latest Version Number
         id: get_version
         run: |
-          VERSION=$(gcloud app versions list --service=default --format="value(VERSION.ID)" --sort-by="~VERSION.ID" --limit=1)
-          NEXT_VERSION=$((VERSION + 1))
-          echo "CURRENT_VERSION=${VERSION}" >> $GITHUB_ENV
+          VERSION_COUNT=$(gcloud app versions list --service=default --format="value(VERSION.ID)" --sort-by="~VERSION.ID" | wc -l)
+          NEXT_VERSION=$((VERSION_COUNT + 1))
           echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
         working-directory: web
 
-      #- name: Deploy staging to GCP App Engine
-      #  run: |
-      #    gcloud app deploy --version=staging --no-promote --no-stop-previous-version
-      #  working-directory: web
       - name: Deploy to GCP App Engine
         run: |
           gcloud app deploy --version=${NEXT_VERSION} --no-promote --no-stop-previous-version
