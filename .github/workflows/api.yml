@@ -85,13 +85,13 @@ jobs:
       #    npm run test
       #  working-directory: web
   
-      #- name: Authenticate with Google Cloud
-      #  env:
-      #    GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
-      #    GCP_KEY_FILE_NAME: ${{ vars.GCP_KEY_FILE_NAME }}
-      #  run: |
-      #    echo "$GOOGLE_APPLICATION_CREDENTIALS" > ${{ vars.GCP_KEY_FILE_NAME }}.json
-      #    gcloud auth activate-service-account --key-file=${{ vars.GCP_KEY_FILE_NAME }}.json
+      - name: Authenticate with Google Cloud
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+          GCP_KEY_FILE_NAME: ${{ vars.GCP_KEY_FILE_NAME }}
+        run: |
+          echo "$GOOGLE_APPLICATION_CREDENTIALS" > ${{ vars.GCP_KEY_FILE_NAME }}.json
+          gcloud auth activate-service-account --key-file=${{ vars.GCP_KEY_FILE_NAME }}.json
   
       - name: Get Latest Version Number
         id: get_version
