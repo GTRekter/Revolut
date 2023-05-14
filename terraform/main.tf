@@ -1,13 +1,11 @@
 terraform {
   backend "gcs" {
-    credentials = var.credentials_file_path
     bucket      = "devopscube-states"
     prefix      = "demo"
   }
 }
 
 provider "google" {
-  credentials = "${file(var.credentials_file_path)}"
   project     = var.config.project
   region      = var.config.region
   zone        = var.config.zone
