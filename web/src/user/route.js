@@ -1,11 +1,10 @@
 
 const express = require('express');
-const moment = require('moment');
 const router = express.Router();
 const controller = require('./controller');
 const model = require('./model');
 
-router.put('/hello/:username', (req, res) => {
+router.put('/hello/:username', async (req, res) => {
     const username = req.params.username;
     const dateOfBirth = req.body.dateOfBirth;
     if (!controller.isValidUsername(username)) {
@@ -19,21 +18,36 @@ router.put('/hello/:username', (req, res) => {
         dateOfBirth: dateOfBirth
     };
     try {
-        model.saveUser(user);
+        await model.saveUser(user);
     } catch (error) {
         return res.sendStatus(500);
     }
     return res.sendStatus(204);
 });
 
-router.get('/hello/:username', async(req, res) => {
+// router.get('/hello/:username', (req, res) => {
+//     const username = req.params.username;
+//     console.log(username)
+//     const user = model.getUserByUsername(username);
+//     console.log(user)
+//     if(user === undefined) {
+//         return res.status(404).send('User not found');
+//     }
+//     const message = controller.getBirthdayMessage(username, user.dateOfBirth);
+//     return res.status(200).send(message);
+// });
+router.get('/hello/:username', async (req, res) => {
     const username = req.params.username;
-    const user = await model.getUserByUsername(username);
-    if(user === undefined) {
+    try {
+      const user = await model.getUserByUsername(username);
+      if (!user) {
         return res.status(404).send('User not found');
+      }
+      const message = controller.getBirthdayMessage(username, user.dateOfBirth);
+      return res.status(200).send(message);
+    } catch (error) {
+      return res.status(500).send('Internal Server Error');
     }
-    const message = controller.getBirthdayMessage(username, user.dateOfBirth);
-    return res.status(200).send(message);
 });
 
 module.exports = router;

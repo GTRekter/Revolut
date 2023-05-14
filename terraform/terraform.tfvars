@@ -1,27 +1,13 @@
 config = {
-    region = "us-east-1"
+    project = "coherent-fold-386610"
+    region  = "us-central1"
+    zone    = "us-central1-c"
 }
-dynamodb_tables = [
+
+app_engine_applications = [ 
     {
-        table_name     = "users"
-        billing_mode   = "PROVISIONED"
-        read_capacity  = 1
-        write_capacity = 1
-        hash_key       = "username"
-        attribute = [
-            {
-                name = "username"
-                type = "S"
-            }
-        ]
-    }
-]
-elastic_beanstalk_applications = [
-    {
-        name                  = "eba-revolut-use-01"
-        service_role          = ""
-        environments = [
-            
-        ]
+        name          = "aea-revolut-usc-01"
+        location_id   = "us-central"
+        database_type = "CLOUD_DATASTORE_COMPATIBILITY"
     }
 ]

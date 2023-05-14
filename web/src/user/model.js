@@ -1,43 +1,41 @@
-const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
-const { DynamoDBDocumentClient, GetCommand, PutCommand } = require("@aws-sdk/lib-dynamodb");
 require('dotenv').config();
 
-const client = new DynamoDBClient({ region: process.env.AWS_REGION });
-const dynamoDbClient = DynamoDBDocumentClient.from(client);
 const USER_TABLE_NAME = 'users';
 
-async function saveUser(user) {
-  const item = {
-    username: user.username,
-    dateOfBirth: user.dateOfBirth
+// https://cloud.google.com/datastore/docs/tools/datastore-emulator
+const datastore = require('../data/datastore');
+
+function saveUser(user) {
+  const entityKey = datastore.key([USER_TABLE_NAME, user.username]);
+  const entity = {
+    key: entityKey,
+    data: [
+      {
+        name: 'dateOfBirth',
+        value: user.dateOfBirth
+      }
+    ]
   };
-  const params = {
-    TableName: USER_TABLE_NAME,
-    Item: item,
-    ConditionExpression: "attribute_not_exists(username)"
-  };
-  try {
-    await dynamoDbClient.send(new PutCommand(params));
-    return item;
-  } 
-  catch (error) {
-    if (error.code === 'ConditionalCheckFailedException') {
-      throw new Error('User already exists');
-    }
-    throw error;
-  }
+  return datastore.save(entity)
 }
-async function getUserByUsername(username) {
-  const params = {
-    TableName: USER_TABLE_NAME,
-    Key: { username: username }
-  };
-  const { Item } = await dynamoDbClient.send(new GetCommand(params));
-  if (Item) {
-    return Item
-  } else {
-    return null
-  }
+
+function getUserByUsername(username) {
+  const entityKey = datastore.key([USER_TABLE_NAME, username]);
+  return datastore
+    .get(entityKey)
+    .then(([response]) => {
+      let user = null;
+      if (response) {
+        user = {
+          username: response[datastore.KEY].name,
+          dateOfBirth: response.dateOfBirth
+        };
+      }
+      return user;
+    })
+    .catch((error) => {
+      console.log('Error retrieving user:', error);
+    });
 }
 
 module.exports = {

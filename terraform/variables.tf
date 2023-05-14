@@ -1,13 +1,8 @@
 variable "config" {
-  type = object({
-    region = string
-  })
+  default = null
 }
-variable "dynamodb_tables" {
-  description = "A map of DynamoDB tables to create"
-  default = {}
-}
-variable "elastic_beanstalk_applications" {
-  description = "A map of Beanstalk applications to create"
-  default = {}
+
+variable "app_engine_applications" {
+  description = "A list of App engine applications instances to create"
+  default = []
 }
