@@ -18,31 +18,32 @@ jobs:
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.0.0
-
-      - name: Change to terraform directory
-        run: |
-          cd terraform
         
       - name: Create Terraform workspace
         run: terraform workspace new pr-${{ github.event.pull_request.number }}
+        working-directory: terraform
 
       - name: Terraform init
         run: terraform init
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        working-directory: terraform
 
       - name: Terraform Format
         run: terraform fmt -check
+        working-directory: terraform
       
       - name: Terraform plan
         run: terraform plan -out=tf.tfplan
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+        working-directory: terraform
 
       - name: Terraform show to convert Terraform plan to text
         run: |
           terraform show -no-color tf.tfplan > ./tf.txt
           echo "terraformPlan=$(cat tf.json | jq -c)" >> $GITHUB_OUTPUT
+        working-directory: terraform
 
       - name: Comment on pull request
         uses: actions/github-script@v5
