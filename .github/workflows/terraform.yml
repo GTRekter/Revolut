@@ -89,9 +89,9 @@ jobs:
               ${{ env.terraform_plan }}
               \`\`\`
             `;
-            github.issues.createComment({
+            github.pulls.createReviewComment({
               ...repo,
-              issue_number: prNumber,
+              pull_number: prNumber,
               body: comment,
             });
 
