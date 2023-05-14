@@ -48,7 +48,7 @@ jobs:
       - name: Install GCP CLI
         run: |
           sudo apt-get remove google-cloud-sdk -y
-          sudo apt purge --autoremove google-cloud-sdk -y
+          # sudo apt purge --autoremove google-cloud-sdk -y
           
           
           sudo apt-get install apt-transport-https ca-certificates gnupg -y
