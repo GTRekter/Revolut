@@ -30,7 +30,7 @@ jobs:
           npm install 
         working-directory: web
           
-      - name: Create .env file
+      - name: Create testing .env file
         run: |
           echo "GCP_PROJECT_ID=${GCP_PROJECT_ID}" >> .env
           echo "GCP_KEY_FILE_NAME=${GCP_KEY_FILE_NAME}" >> .env
@@ -100,9 +100,15 @@ jobs:
           gcloud auth activate-service-account --key-file=${{ vars.GCP_KEY_FILE_NAME }}.json
         working-directory: web
         
-      - name: Check credential
+      - name: Create production .env file
         run: |
-          ls -R
+          echo "GCP_PROJECT_ID=${GCP_PROJECT_ID}" >> .env
+          echo "GCP_KEY_FILE_NAME=${GCP_KEY_FILE_NAME}" >> .env
+          echo "GCP_USE_EMULATOR=${GCP_USE_EMULATOR}" >> .env
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_KEY_FILE_NAME: ${{ vars.GCP_KEY_FILE_NAME }}
+          GCP_USE_EMULATOR: false
         working-directory: web
         
       - name: Get Latest Version Number
