@@ -97,6 +97,7 @@ jobs:
       - name: Check credential
         run: |
           ls -R
+        working-directory: web
         
       - name: Get Latest Version Number
         id: get_version
