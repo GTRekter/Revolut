@@ -1,7 +1,7 @@
 terraform {
   backend "gcs" {
-    bucket      = "devopscube-states"
-    prefix      = "demo"
+    bucket      = "bt-revolut-usc"
+    prefix      = "tfstates"
   }
 }
 
