@@ -48,16 +48,15 @@ jobs:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
         working-directory: terraform
 
-      - name: Terraform show to convert Terraform plan to text
-        if: github.event_name == 'pull_request'
-        run: |
-          terraform show -no-color tf.tfplan > tf.json
-        env:
-          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
-        working-directory: terraform
+      # - name: Terraform show to convert Terraform plan to text
+      #   if: github.event_name == 'pull_request'
+      #   run: |
+      #     terraform show -no-color tf.tfplan > tf.json
+      #   env:
+      #     GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
+      #   working-directory: terraform
       
-      - name: Terraform static code analysis
-        if: github.event_name == 'pull_request'
+      - name: Install Checkov
         run: |
           sudo apt install python3-pip
           sudo pip3 install checkov
