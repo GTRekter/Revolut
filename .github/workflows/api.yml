@@ -45,6 +45,34 @@ jobs:
           DATASTORE_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         working-directory: web
    
+      - name: Install GCP CLI
+        run: |
+          curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-430.0.0-linux-x86_64.tar.gz
+          tar -xf google-cloud-cli-430.0.0-linux-x86.tar.gz
+          sudo ./google-cloud-sdk/install.sh
+      
+      - name: Install Java JRE
+        run: |
+          sudo apt install default-jre
+          sudo apt install openjdk-8-jre
+    
+      - name: Install Java JRE
+        run: |
+          sudo apt install default-jre
+          sudo apt install openjdk-8-jre  
+
+      - name: Configure GCP CLI
+        run: |      
+          gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
+          gcloud components install cloud-datastore-emulator
+          gcloud beta emulators datastore start --no-store-on-disk --quiet
+        working-directory: web
+
+      - name: Start local datastore
+        run: |      
+          gcloud beta emulators datastore start --no-store-on-disk --quiet
+        working-directory: web
+   
       - name: Run Mocha tests
         run: |
           npm run test
