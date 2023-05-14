@@ -1,71 +1,57 @@
-name: Deploy and Test
+name: Terraform Workflow
 
 on:
-  push:
-    branches: [main]
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
-  deploy:
+  terraform:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
-      - name: Install and configure Terraform
-        uses: hashicorp/setup-terraform@v1
-        with:
-          terraform_version: 1.0.1
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.8
-      - name: Test with Checkov
-        id: checkov
-        uses: bridgecrewio/checkov-action@master
-        with:
-          directory: terraform
-          framework: terraform 
-      - name: Initialize Terraform
-        run: |
-          cd terraform
-          terraform init
-      - name: Provision infrastructure
-        run: |
-          terraform apply --auto-approve
-  test:
-    needs: deploy
-    runs-on: ubuntu-latest
-    steps:
-      - name: Install Node.js
-        uses: actions/setup-node@v2.3.0
-        with:
-          node-version: '14.x'
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Install dependencies
+
+      - name: Set up Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.0.0
+
+      - name: Change to terraform directory
+        run: cd terraform
+        
+      - name: Create Terraform workspace
+        run: terraform workspace new pr-${{ github.event.pull_request.number }}
+
+      - name: Terraform init
+        run: terraform init
+
+      - name: Terraform plan
+        run: terraform plan -out=tf.tfplan
+
+      - name: Terraform show to convert Terraform plan to text
         run: |
-          npm install 
-      - name: Create .env file
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_REGION: ${{ secrets.AWS_REGION }}
-          API_BASE_URL: ${{ secrets.API_BASE_URL }}
-        run: |
-          echo "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}" >> .env
-          echo "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" >> .env
-          echo "AWS_REGION=${AWS_REGION}" >> .env
-          echo "API_BASE_URL=${API_BASE_URL}" >> .env
-      - name: Run Mocha tests
-        run: npm run test
-      - name: Run K6 load tests
-        run: k6 run loadtests
-      - name: Swap blue/green deployment
-        if: ${{ success() && steps.k6.outputs.overall_result === 'successful' }}
-        run: |
-          eb swap development --destination-name production --verbose
+          terraform show -no-color tf.tfplan > ./tf.txt
+          echo "terraformPlan=$(cat tf.json | jq -c)" >> $GITHUB_OUTPUT
+
+      - name: Comment on pull request
+        uses: actions/github-script@v5
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = "${{ github.event.pull_request.number }}";
+            const repo = context.repo;
+            const comment = `
+              Terraform plan has been executed for this pull request.
+              - [View Terraform Plan](https://github.com/${repo.owner}/${repo.repo}/pull/${prNumber}/files)
+              - [View Terraform Apply](https://github.com/${repo.owner}/${repo.repo}/actions?query=workflow%3A%22Terraform+Workflow%22)
+              \`\`\`
+              ${terraformPlan}
+              \`\`\`
+            `;
+            github.issues.createComment({
+              ...repo,
+              issue_number: prNumber,
+              body: comment,
+            });
