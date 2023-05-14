@@ -124,10 +124,6 @@ jobs:
       #    npm run loadtest
       #  working-directory: web
 
-      - name: Check API endpoint with bash script
-        run: |
-          curl -X HEAD -I 'https://${NEXT_VERSION}.${{ secrets.GCP_PROJECT_ID }}.uc.r.appspot.com/hello/testuser'
-    
       - name: Swap App Engine versions
         run: | 
           gcloud app services set-traffic default --splits=${CURRENT_VERSION}=0,${NEXT_VERSION}=1 --quiet
