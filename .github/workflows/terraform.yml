@@ -26,12 +26,12 @@ jobs:
         with:
           terraform_version: 1.0.0
 
-      - name: Check and install Docker
-        run: |
-          if ! [[ $(which docker) && $(docker --version) ]]; then
-            sudo snap install docker;
-            sudo snap restart docker;
-          fi
+      # - name: Check and install Docker
+      #   run: |
+      #     if ! [[ $(which docker) && $(docker --version) ]]; then
+      #       sudo snap install docker;
+      #       sudo snap restart docker;
+      #     fi
 
       - name: Terraform init
         run: |
@@ -66,8 +66,15 @@ jobs:
       - name: Terraform static code analysis
         # if: github.event_name == 'pull_request'
         run: |
-          sudo docker pull bridgecrew/checkov
-          sudo docker run --rm --volume ~/terraform:/terraform --workdir /terraform bridgecrew/checkov -f tf.json --output junitxml --skip-download --soft-fail > ~/report.xml
+          sudo apt install python3-pip
+          sudo pip3 install checkov
+          # sudo docker pull bridgecrew/checkov
+          # sudo docker run --rm --volume ~/terraform:/terraform --workdir /terraform bridgecrew/checkov -f tf.json --output junitxml --skip-download --soft-fail > ~/report.xml
+
+      - name: Run Checkov
+        run: |
+          checkov -f tf.json
+        working-directory: terraform
 
       - name: Set environment variable with the Terraform plan
         if: github.event_name == 'pull_request'
