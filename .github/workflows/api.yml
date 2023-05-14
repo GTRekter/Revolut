@@ -95,12 +95,12 @@ jobs:
   
       - name: Deploy to GCP App Engine
         run: |
-          gcloud app deploy --no-promote
+          gcloud app deploy --version=staging --no-promote --no-stop-previous-version
         working-directory: web
 
-      - name: Swap App Engine versions
-        run: | 
-          gcloud app services set-traffic default --splits=v1=0.9,v2=0.1 --quiet
+      #- name: Swap App Engine versions
+      #  run: | 
+      #    gcloud app services set-traffic default --splits=v1=0.9,v2=0.1 --quiet
 
       #- name: Upload a Build Artifact
      #   uses: actions/upload-artifact@v3.1.2
