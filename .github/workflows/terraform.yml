@@ -67,7 +67,7 @@ jobs:
         # if: github.event_name == 'pull_request'
         run: |
           sudo docker pull bridgecrew/checkov
-          sudo docker run --rm --volume ~/terraform:/terraform --workdir /terraform bridgecrew/checkov -f tf.json --output junitxml --skip-download --soft-fail > ~/report/report.xml
+          sudo docker run --rm --volume ~/terraform:/terraform --workdir /terraform bridgecrew/checkov -f tf.json --output junitxml --skip-download --soft-fail > ~/report.xml
 
       - name: Set environment variable with the Terraform plan
         if: github.event_name == 'pull_request'
