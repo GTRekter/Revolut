@@ -22,7 +22,7 @@ jobs:
       - name: Change to terraform directory
         run: |
           cd terraform
-          ls terraform
+          ls
         
       - name: Create Terraform workspace
         run: terraform workspace new pr-${{ github.event.pull_request.number }}
