@@ -24,18 +24,6 @@ router.put('/hello/:username', async (req, res) => {
     }
     return res.sendStatus(204);
 });
-
-// router.get('/hello/:username', (req, res) => {
-//     const username = req.params.username;
-//     console.log(username)
-//     const user = model.getUserByUsername(username);
-//     console.log(user)
-//     if(user === undefined) {
-//         return res.status(404).send('User not found');
-//     }
-//     const message = controller.getBirthdayMessage(username, user.dateOfBirth);
-//     return res.status(200).send(message);
-// });
 router.get('/hello/:username', async (req, res) => {
     const username = req.params.username;
     try {
@@ -49,5 +37,9 @@ router.get('/hello/:username', async (req, res) => {
       return res.status(500).send('Internal Server Error');
     }
 });
+app.get('/', (req, res) => {
+  res.status(200).send('Hello from App Engine!');
+});
+
 
 module.exports = router;
