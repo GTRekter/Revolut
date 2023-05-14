@@ -40,7 +40,11 @@ jobs:
       - name: Terraform show to convert Terraform plan to text
         run: |
           terraform show -no-color tf.tfplan > ./tf.txt
-          echo "terraformPlan=$(cat tf.txt | jq -c)" >> $GITHUB_OUTPUT
+        working-directory: terraform
+        
+      - name: Set environment variable with the Terraform plan
+        run: |
+          echo "terraform_plan=$(cat tf.txt | jq -c)" >> "$GITHUB_ENV"
         working-directory: terraform
 
       - name: Comment on pull request
@@ -56,7 +60,7 @@ jobs:
               - [View Terraform Plan](https://github.com/${repo.owner}/${repo.repo}/pull/${prNumber}/files)
               - [View Terraform Apply](https://github.com/${repo.owner}/${repo.repo}/actions?query=workflow%3A%22Terraform+Workflow%22)
               \`\`\`
-              ${terraformPlan}
+              ${{ env.terraform_plan }}
               \`\`\`
             `;
             github.issues.createComment({
