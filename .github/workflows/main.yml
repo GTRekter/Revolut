@@ -36,14 +36,19 @@ jobs:
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
         working-directory: terraform
+        
+      - name: Test
+        run: ls -R
 
       - name: Terraform show to convert Terraform plan to text
+        if: github.event_name == 'pull_request'
         run: |
           terraform show -no-color tf.tfplan > ./tf.txt
           echo "terraformPlan=$(cat tf.json | jq -c)" >> $GITHUB_OUTPUT
         working-directory: terraform
 
       - name: Comment on pull request
+        if: github.event_name == 'pull_request'
         uses: actions/github-script@v5
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
