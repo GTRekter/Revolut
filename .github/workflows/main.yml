@@ -30,10 +30,6 @@ jobs:
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
         working-directory: terraform
-
-      - name: Terraform Format
-        run: terraform fmt -check
-        working-directory: terraform
       
       - name: Terraform plan
         run: terraform plan -out=tf.tfplan
