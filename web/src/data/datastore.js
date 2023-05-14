@@ -10,7 +10,7 @@ if (process.env.GCP_USE_EMULATOR === 'true') {
 } else {
   datastore = new Datastore({ 
     projectId: process.env.GCP_PROJECT_ID,
-    keyFilename: `./${process.env.GCP_KEY_FILE_NAME}`
+    keyFilename: `../../${process.env.GCP_KEY_FILE_NAME}`
   });
 }
 
