@@ -258,7 +258,7 @@ jobs:
         working-directory: web
 
   deploy:
-    needs: setup
+    needs: test
     runs-on: ubuntu-latest
     steps:
 
