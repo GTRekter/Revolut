@@ -126,5 +126,5 @@ jobs:
 
       - name: Swap App Engine versions
         run: | 
-          gcloud app services set-traffic default --splits=${CURRENT_VERSION}=0,${NEXT_VERSION}=1 --quiet
+          gcloud app services set-traffic default --splits=${NEXT_VERSION}=1 --quiet
 
