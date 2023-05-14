@@ -222,14 +222,23 @@ jobs:
 
       - name: Create testing .env file
         run: |
-          echo "GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" >> .env
-          echo "GCP_KEY_FILE_NAME=${{ secrets.GCP_KEY_FILE_NAME }}" >> .env
-          echo "GCP_USE_EMULATOR=${{ secrets.GCP_USE_EMULATOR }}" >> .env
-          echo "DATASTORE_DATASET=${{ secrets.GCP_PROJECT_ID }}" >> .env
-          echo "DATASTORE_EMULATOR_HOST=${{ secrets.DATASTORE_EMULATOR_HOST }}" >> .env
-          echo "DATASTORE_EMULATOR_HOST_PATH=${{ secrets.DATASTORE_EMULATOR_HOST_PATH }}" >> .env
-          echo "DATASTORE_HOST=${{ secrets.DATASTORE_HOST }}" >> .env
-          echo "DATASTORE_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" >> .env
+          echo "GCP_PROJECT_ID=${GCP_PROJECT_ID}" >> .env
+          echo "GCP_KEY_FILE_NAME=${GCP_KEY_FILE_NAME}" >> .env
+          echo "GCP_USE_EMULATOR=${GCP_USE_EMULATOR}" >> .env
+          echo "DATASTORE_DATASET=${DATASTORE_DATASET}" >> .env
+          echo "DATASTORE_EMULATOR_HOST=${DATASTORE_EMULATOR_HOST}" >> .env
+          echo "DATASTORE_EMULATOR_HOST_PATH=${DATASTORE_EMULATOR_HOST_PATH}" >> .env
+          echo "DATASTORE_HOST=${DATASTORE_HOST}" >> .env
+          echo "DATASTORE_PROJECT_ID=${DATASTORE_PROJECT_ID}" >> .env
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_KEY_FILE_NAME: ${{ vars.GCP_KEY_FILE_NAME }}
+          GCP_USE_EMULATOR: true
+          DATASTORE_DATASET: ${{ secrets.GCP_PROJECT_ID }}
+          DATASTORE_EMULATOR_HOST: ${{ vars.DATASTORE_EMULATOR_HOST }}
+          DATASTORE_EMULATOR_HOST_PATH: ${{ vars.DATASTORE_EMULATOR_HOST_PATH }}
+          DATASTORE_HOST: ${{ vars.DATASTORE_HOST }}
+          DATASTORE_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
         working-directory: web
         
       - name: Start local datastore emulator
@@ -296,9 +305,13 @@ jobs:
           
       - name: Create production .env file
         run: |
-          echo "GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }}" >> .env
-          echo "GCP_KEY_FILE_NAME=${{ secrets.GCP_KEY_FILE_NAME }}" >> .env
-          echo "GCP_USE_EMULATOR=false" >> .env
+          echo "GCP_PROJECT_ID=${GCP_PROJECT_ID}" >> .env
+          echo "GCP_KEY_FILE_NAME=${GCP_KEY_FILE_NAME}" >> .env
+          echo "GCP_USE_EMULATOR=${GCP_USE_EMULATOR}" >> .env
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_KEY_FILE_NAME: ${{ vars.GCP_KEY_FILE_NAME }}
+          GCP_USE_EMULATOR: false
         working-directory: web
 
       - name: Get Latest Version Number
