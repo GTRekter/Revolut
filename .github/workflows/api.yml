@@ -117,7 +117,7 @@ jobs:
 
   deploy:
     needs: test
-    environment: Production
+    environment: Development
     runs-on: ubuntu-latest
     steps:
 
