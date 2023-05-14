@@ -50,12 +50,7 @@ jobs:
           curl -O https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/google-cloud-cli-430.0.0-linux-x86_64.tar.gz
           tar -xf google-cloud-cli-430.0.0-linux-x86_64.tar.gz
           sudo ./google-cloud-sdk/install.sh
-      
-      - name: Install Java JRE
-        run: |
-          sudo apt install default-jre
-          sudo apt install openjdk-8-jre
-    
+
       - name: Install Java JRE
         run: |
           sudo apt install default-jre
@@ -65,13 +60,21 @@ jobs:
         run: |      
           gcloud config set project ${{ secrets.GCP_PROJECT_ID }}
           # gcloud components install cloud-datastore-emulator
-          sudo apt-get install google-cloud-sdk-datastore-emulator
+          # sudo apt-get install google-cloud-sdk-datastore-emulator
         working-directory: web
 
-      - name: Start local datastore
+      - name: Start local datastore emulator
         run: |      
           gcloud beta emulators datastore start --no-store-on-disk --quiet
         working-directory: web
+        env:
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          GCP_KEY_FILE_NAME: ${{ vars.GCP_KEY_FILE_NAME }}
+          DATASTORE_DATASET: ${{ secrets.GCP_PROJECT_ID }}
+          DATASTORE_EMULATOR_HOST: ${{ vars.DATASTORE_EMULATOR_HOST }}
+          DATASTORE_EMULATOR_HOST_PATH: ${{ vars.DATASTORE_EMULATOR_HOST_PATH }}
+          DATASTORE_HOST: ${{ vars.DATASTORE_HOST }}
+          DATASTORE_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
    
       - name: Run Mocha tests
         run: |
