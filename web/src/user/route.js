@@ -8,10 +8,10 @@ router.put('/hello/:username', async (req, res) => {
     const username = req.params.username;
     const dateOfBirth = req.body.dateOfBirth;
     if (!controller.isValidUsername(username)) {
-        return res.status(400).send('Invalid username');
+        return res.status(400).send(`The provided username (${username}) is invalid. Please provide a username consisting of letters only.`);
     }
     if (!controller.isValidDateOfBirth(dateOfBirth)) {
-      return res.status(400).send('Invalid date of birth');
+      return res.status(400).send(`The provided date of birth (${dateOfBirth}) is invalid. Please insert a date in the format YYYY-MM-DD that is before today.`);
     }
     const user = {
         username: username,
