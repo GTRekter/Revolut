@@ -119,6 +119,7 @@ jobs:
     needs: test
     environment: Development
     runs-on: ubuntu-latest
+    if: github.event_name == 'push'
     steps:
 
       - name: Install Node.js
