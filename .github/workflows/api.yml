@@ -116,12 +116,6 @@ jobs:
           GCP_USE_EMULATOR: false
         working-directory: web
         
-      - name: Check
-        run: |
-          cat .env
-          cat ${{ vars.GCP_KEY_FILE_NAME }}
-        working-directory: web
-        
       - name: Get Latest Version Number
         id: get_version
         run: |
