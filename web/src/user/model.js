@@ -6,7 +6,9 @@ const USER_TABLE_NAME = 'users';
 const datastore = require('../data/datastore');
 
 function saveUser(user) {
+  console.log(`Method saveUser begin`)
   const entityKey = datastore.key([USER_TABLE_NAME, user.username]);
+  console.log(`entityKey: ${entityKey}`)
   const entity = {
     key: entityKey,
     data: [
@@ -16,10 +18,12 @@ function saveUser(user) {
       }
     ]
   };
+  console.log(`Method saveUser end`)
   return datastore.save(entity)
 }
 
 function getUserByUsername(username) {
+  console.log(`Method getUserByUsername begin`)
   const entityKey = datastore.key([USER_TABLE_NAME, username]);
   return datastore
     .get(entityKey)
@@ -31,10 +35,13 @@ function getUserByUsername(username) {
           dateOfBirth: response.dateOfBirth
         };
       }
+      console.log(`Method getUserByUsername end`)
       return user;
     })
-    .catch((error) => {
+    .catch((error) => {     
       console.log('Error retrieving user:', error);
+      console.log(`Method getUserByUsername end`);
+      return null
     });
 }
 
