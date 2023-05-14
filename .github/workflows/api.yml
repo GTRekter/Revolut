@@ -99,6 +99,12 @@ jobs:
       #  run: |
       #    gcloud app deploy --version=staging --no-promote --no-stop-previous-version
       #  working-directory: web
+      
+      
+
+      - name: Install K6
+        run: |
+          sudo apt-get install k6
         
       - name: Run K6 load tests
         run: |
