@@ -98,7 +98,6 @@ jobs:
         run: |
           echo "$GOOGLE_APPLICATION_CREDENTIALS" > ${{ vars.GCP_KEY_FILE_NAME }}.json
           gcloud auth activate-service-account --key-file=${{ vars.GCP_KEY_FILE_NAME }}.json
-        working-directory: web
         
       - name: Delete testing .env file
         run: |
@@ -122,7 +121,6 @@ jobs:
           VERSION_COUNT=$(gcloud app versions list --service=default --format="value(VERSION.ID)" --sort-by="~VERSION.ID" | wc -l)
           NEXT_VERSION=$((VERSION_COUNT + 1))
           echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
-        working-directory: web
 
       - name: Deploy to GCP App Engine
         run: |
