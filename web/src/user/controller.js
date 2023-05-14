@@ -11,6 +11,7 @@ function isValidDateOfBirth(dateOfBirth) {
     const today = moment().startOf('day');
     return moment(dateOfBirth, 'YYYY-MM-DD').isValid() && moment(dateOfBirth, 'YYYY-MM-DD').isBefore(today);
 }
+
 function getBirthdayMessage(username, dateOfBirth) {
     const momentDateOfBirth = moment(dateOfBirth, 'YYYY-MM-DD');
     const today = moment().startOf('day');
@@ -18,7 +19,7 @@ function getBirthdayMessage(username, dateOfBirth) {
     if (momentDateOfBirth.isSame(today, 'day')) {
         return `Hello, ${username}! Happy birthday!`
     } else {
-        return `Hello, ${username}! Your birthday is in ${momentDateOfBirth.diff(today, 'days')} days. You will be ${age + 1} years old.`
+        return `Hello, ${username}! Your birthday is in ${today.diff(momentDateOfBirth, 'days')} days. You will be ${age + 1} years old.`
     }
 }
 
