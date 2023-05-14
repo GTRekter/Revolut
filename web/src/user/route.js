@@ -19,10 +19,10 @@ router.put('/hello/:username', async (req, res) => {
     };
     try {
         await model.saveUser(user);
+        return res.sendStatus(204);
     } catch (error) {
         return res.sendStatus(500).send(error.message);
-    }
-    return res.sendStatus(204);
+    }    
 });
 router.get('/hello/:username', async (req, res) => {
     const username = req.params.username;
