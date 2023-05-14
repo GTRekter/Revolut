@@ -5,9 +5,9 @@ config = {
 }
 
 app_engine_applications = [ 
-    {
-        name          = "aea-revolut-usc-01"
-        location_id   = "us-central"
-        database_type = "CLOUD_DATASTORE_COMPATIBILITY"
-    }
+    #{
+    #    name          = "aea-revolut-usc-01"
+    #    location_id   = "us-central"
+    #    database_type = "CLOUD_DATASTORE_COMPATIBILITY"
+    #}
 ]
