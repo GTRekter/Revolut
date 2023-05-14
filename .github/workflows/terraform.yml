@@ -1,4 +1,4 @@
-name: Terraform Workflow
+name: Test and deploy API
 
 on:
   push:
@@ -24,6 +24,13 @@ jobs:
         uses: hashicorp/setup-terraform@v1
         with:
           terraform_version: 1.0.0
+
+      - name: Check and install Docker
+        run: |
+          if ! [[ $(which docker) && $(docker --version) ]]; then
+            sudo snap install docker;
+            sudo snap restart docker;
+          fi
 
       - name: Terraform init
         run: |
@@ -54,7 +61,12 @@ jobs:
         env:
           GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
         working-directory: terraform
-        
+      
+      - name: Terraform static code analysis
+        run: |
+          sudo docker pull bridgecrew/checkov
+          sudo docker run --rm --volume ~/terraform:/terraform --workdir /terraform bridgecrew/checkov -f tf.json --output junitxml --skip-download --soft-fail > ~/report/report.xml
+
       - name: Set environment variable with the Terraform plan
         if: github.event_name == 'pull_request'
         run: |
