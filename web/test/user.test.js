@@ -39,7 +39,7 @@ describe('PUT /hello/:username', () => {
             return done(err);
           }
           chai.assert(res.status === 400, `Expected response status to be 400, got ${res.status}`);
-          chai.expect(res.text).to.equal('Invalid username');
+          chai.expect(res.text).to.equal('The provided username is invalid. Please provide a username consisting of letters only.');
           done();
         });
     });
@@ -57,7 +57,7 @@ describe('PUT /hello/:username', () => {
             return done(err);
           }
           chai.assert(res.status === 400, `Expected response status to be 400, got ${res.status}`);
-          chai.expect(res.text).to.equal('Invalid username');
+          chai.expect(res.text).to.equal('The provided username is invalid. Please provide a username consisting of letters only.');
           done();
         });
     });
@@ -73,7 +73,7 @@ describe('PUT /hello/:username', () => {
             return done(err);
           }
           chai.assert(res.status === 400, `Expected response status to be 400, got ${res.status}`);
-          chai.expect(res.text).to.equal('Invalid date of birth');
+          chai.expect(res.text).to.equal('The provided date of birth is invalid. Please insert a date in the format YYYY-MM-DD that is before today.');
           done();
         });
     });
@@ -91,7 +91,7 @@ describe('PUT /hello/:username', () => {
             return done(err);
           }
           chai.assert(res.status === 400, `Expected response status to be 400, got ${res.status}`);
-          chai.expect(res.text).to.equal('Invalid date of birth');
+          chai.expect(res.text).to.equal('The provided date of birth is invalid. Please insert a date in the format YYYY-MM-DD that is before today.');
           done();
         });
     });
@@ -109,7 +109,7 @@ describe('PUT /hello/:username', () => {
             return done(err);
           }
           chai.assert(res.status === 400, `Expected response status to be 400, got ${res.status}`);
-          chai.expect(res.text).to.equal('Invalid date of birth');
+          chai.expect(res.text).to.equal('The provided date of birth is invalid. Please insert a date in the format YYYY-MM-DD that is before today.');
           done();
         });
     });
