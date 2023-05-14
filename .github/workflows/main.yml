@@ -20,7 +20,9 @@ jobs:
           terraform_version: 1.0.0
 
       - name: Change to terraform directory
-        run: cd terraform
+        run: |
+          cd terraform
+          ls terraform
         
       - name: Create Terraform workspace
         run: terraform workspace new pr-${{ github.event.pull_request.number }}
