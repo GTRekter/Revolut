@@ -22,16 +22,22 @@ jobs:
       - name: Change to terraform directory
         run: |
           cd terraform
-          ls
         
       - name: Create Terraform workspace
         run: terraform workspace new pr-${{ github.event.pull_request.number }}
 
       - name: Terraform init
         run: terraform init
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
 
+      - name: Terraform Format
+        run: terraform fmt -check
+      
       - name: Terraform plan
         run: terraform plan -out=tf.tfplan
+        env:
+          GOOGLE_CREDENTIALS: ${{ secrets.GCP_CREDENTIALS }}
 
       - name: Terraform show to convert Terraform plan to text
         run: |
