@@ -1,4 +1,4 @@
-name: Test and deploy API
+name: Test and deploy Terraform
 
 on:
   push:
